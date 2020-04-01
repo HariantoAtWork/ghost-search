@@ -1,11 +1,9 @@
 <template>
 	<div class="ghost-search">
-		<input type="search" v-model="search" />
-		<div
-			class="ghost-search-posts"
-			v-for="post in filteredPosts"
-			:key="post.id"
-		>
+		<div class="ghost-search-input">
+			<input type="search" v-model="query" />
+		</div>
+		<div class="ghost-search-posts" v-for="post in posts" :key="post.id">
 			<h1>{{ post.title }}</h1>
 			<p>{{ post.custom_excerpt || post.excerpt }}</p>
 		</div>
@@ -13,9 +11,11 @@
 </template>
 
 <script>
-// import HelloWorld from './components/HelloWorld.vue'
-const lastBuildDate = require('./lib/lastBuildDate')
+const GhostApi = require('./lib/GhostApi')
+const getLastBuildDate = require('./lib/getLastBuildDate')
 const loadScript = require('./lib/loadScript')
+
+const ghostApi = new GhostApi()
 
 export default {
 	name: 'App',
@@ -42,17 +42,18 @@ export default {
 		}
 	},
 	data: () => ({
-		search: '',
+		query: '',
+		lastBuildDate: '',
 		posts: []
 	}),
 	computed: {
 		filteredPosts() {
-			return this.search.trim().length > 2
+			return this.query.trim().length > 0
 				? this.posts.filter(post =>
 						Object.values(post)
 							.toString()
 							.toLowerCase()
-							.includes(this.search.trim().toLowerCase())
+							.includes(this.query.trim().toLowerCase())
 				  )
 				: this.posts
 		}
@@ -61,34 +62,34 @@ export default {
 		stringify: value => JSON.stringify(value, null, '\t')
 	},
 	methods: {
-		searchInKeys: object => {
-			const foundKeys = []
-			const keys = ['title', 'html', 'custom_excerpt', 'excerpt']
-
-			keys.forEach(key => {
-				if (object[key]) foundKeys.push(object[key].toLowerCase())
-			})
-			return foundKeys
+		assignPosts(data) {
+			console.log('hi', Object.keys(data))
+			const { meta, posts } = data
+			const next = meta.pagination.next
+			this.posts.push(...posts)
+			if (next) {
+				return ghostApi.nextChunkPosts(next).then(this.assignPosts)
+			} else {
+				return data
+			}
+		},
+		updateData() {
+			this.posts = []
+			const lastBuildDate = getLastBuildDate(`${this.url}/rss/`)
+			const posts = ghostApi.posts()
+			Promise.all([lastBuildDate, posts])
+				.then(values => {
+					const [lastBuildDate, data] = values
+					this.lastBuildDate = lastBuildDate
+					return data
+				})
+				.then(data => this.assignPosts(data))
 		}
 	},
 	created() {
-		loadScript(this.script)
-			.then(() => {
-				const { url, ghostKey, version } = this
-				const api = (window['api'] = new window.GhostContentAPI({
-					url,
-					key: ghostKey,
-					version
-				}))
-				return api
-			})
-			.then(api => api.posts.browse({ limit: 'all', include: 'tags,authors' }))
-			.then((posts, meta) => (this.posts = posts))
-
-		lastBuildDate('http://blog.ghost.localhost/rss/').then(
-			console.log.bind(console)
-		)
-		console.log('url:', this.url)
+		const { url, ghostKey } = this
+		ghostApi.updateSettings({ url, key: ghostKey })
+		this.updateData()
 	}
 }
 </script>
