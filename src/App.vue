@@ -1,6 +1,14 @@
 <template>
 	<div class="ghost-search">
-		Derp
+		<input type="search" v-model="search" />
+		<div
+			class="ghost-search-posts"
+			v-for="post in filteredPosts"
+			:key="post.id"
+		>
+			<h1>{{ post.title }}</h1>
+			<p>{{ post.custom_excerpt || post.excerpt }}</p>
+		</div>
 	</div>
 </template>
 
@@ -20,11 +28,13 @@ export default {
 		},
 		'url': {
 			type: String,
-			required: true
+			required: true,
+			default: 'https://blog.ghost.localhost'
 		},
 		'ghostKey': {
 			type: String,
-			required: true
+			required: true,
+			default: 'c3426374501bcd41a801c5a74a'
 		},
 		'version': {
 			type: String,
@@ -32,8 +42,35 @@ export default {
 		}
 	},
 	data: () => ({
+		search: '',
 		posts: []
 	}),
+	computed: {
+		filteredPosts() {
+			return this.search.trim().length > 2
+				? this.posts.filter(post =>
+						Object.values(post)
+							.toString()
+							.toLowerCase()
+							.includes(this.search.trim().toLowerCase())
+				  )
+				: this.posts
+		}
+	},
+	filters: {
+		stringify: value => JSON.stringify(value, null, '\t')
+	},
+	methods: {
+		searchInKeys: object => {
+			const foundKeys = []
+			const keys = ['title', 'html', 'custom_excerpt', 'excerpt']
+
+			keys.forEach(key => {
+				if (object[key]) foundKeys.push(object[key].toLowerCase())
+			})
+			return foundKeys
+		}
+	},
 	created() {
 		loadScript(this.script)
 			.then(() => {
@@ -45,7 +82,9 @@ export default {
 				}))
 				return api
 			})
-			.then(console.log.bind(console, 'API LOADED'))
+			.then(api => api.posts.browse({ limit: 'all', include: 'tags,authors' }))
+			.then((posts, meta) => (this.posts = posts))
+
 		lastBuildDate('http://blog.ghost.localhost/rss/').then(
 			console.log.bind(console)
 		)
