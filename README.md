@@ -1,22 +1,25 @@
 # ghost-search
 
+(Work in Progress)
+
 ## Project setup
-```
+```bash
 npm install
 ```
 
+## NPM scripts
+```bash
 ### Compiles and hot-reloads for development
-```
+npm run dev
+### Compiles and hot-reloads for development
 npm run serve
-```
-
 ### Compiles and minifies for production
-```
 npm run build
-```
-
+### Build Target: Webcomponent for production
+npm run build.wc
+### Build Target: Webcomponent Async for production
+npm run build.wc-async
 ### Lints and fixes files
-```
 npm run lint
 ```
 
