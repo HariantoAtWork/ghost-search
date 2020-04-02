@@ -74,11 +74,11 @@ export default {
 	},
 	methods: {
 		assignPosts(data) {
-			const { meta, posts } = data
+			const { meta, posts, $params } = data
 			const { next, limit } = meta.pagination
 			this.posts.push(...posts)
 			if (next) {
-				return ghostApi.posts({ page: next, limit }).then(this.assignPosts)
+				return ghostApi.posts({ ...$params, page: next }).then(this.assignPosts)
 			} else {
 				return data
 			}
