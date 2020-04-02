@@ -13,8 +13,8 @@
 	"dependencies": {
 		"axiosbluebird": "^1.1.6",
 		"core-js": "^3.6.4",
+		"dayjs": "^1.8.23",
 		"md5": "^2.2.1",
-		"moment": "^2.24.0",
 		"vue": "^2.6.11"
 	},
 	"devDependencies": {
