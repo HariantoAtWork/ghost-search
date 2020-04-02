@@ -11,11 +11,9 @@
 </template>
 
 <script>
-const GhostApi = require('./lib/GhostApi')
+const ghostApi = require('./lib/ghostApi')
 const getLastBuildDate = require('./lib/getLastBuildDate')
 const loadScript = require('./lib/loadScript')
-
-const ghostApi = new GhostApi()
 
 export default {
 	name: 'App',
