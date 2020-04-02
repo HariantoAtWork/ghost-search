@@ -13,7 +13,6 @@
 <script>
 const ghostApi = require('./lib/ghostApi')
 const getLastBuildDate = require('./lib/getLastBuildDate')
-const loadScript = require('./lib/loadScript')
 
 export default {
 	name: 'App',
