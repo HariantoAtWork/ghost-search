@@ -22,7 +22,10 @@ const ghostApi = {
 		retrievePostRequest.cancel()
 		retrievePostRequest = axiosBluebird
 			.get(url, params)
-			.then(({ data }) => data)
+			.then(({ data, config }) => ({
+				...data,
+				$params: config.params
+			}))
 			.catch(console.error.bind(console, 'FAIL - posts'))
 		return retrievePostRequest
 	},
