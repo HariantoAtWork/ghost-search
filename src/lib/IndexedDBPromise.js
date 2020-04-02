@@ -94,20 +94,13 @@ const IndexedDBPromise = function(databaseName, tableName, options) {
 			request.onerror = error => reject(error)
 		})
 
-	const key = (prop, value, { store, tx, db }) =>
+	const clear = ({ store, tx, db }) =>
 		new Promise((resolve, reject) => {
-			const data = { prop, value }
-			log({ data, store, tx })
-			tx.onsuccess = log.bind(console, `put ${prop}:${value}`)
-			const request = store.put(prop, value)
+			log({ store, tx })
+			tx.onsuccess = log.bind(console, `clear`)
+			const request = store.clear()
 			request.onsuccess = event => resolve(event.target.result)
-			equest.onerror = reject
-			// resolve(
-			// 	putKeyToStore({ store, data }).then(result => {
-			// 		db.close()
-			// 		return result
-			// 	})
-			// )
+			request.onerror = reject
 		})
 	const put = (data, { store, tx, db }) =>
 		new Promise((resolve, reject) => {
@@ -269,10 +262,8 @@ const IndexedDBPromise = function(databaseName, tableName, options) {
 			) // improved works, but need to refactor
 			.then(openTransaction.bind(openTransaction, 'readwrite'))
 
-	this.key = (prop, value) =>
-		readwriteTransaction(databaseName, tableName).then(
-			key.bind(key, prop, value)
-		)
+	this.clear = () =>
+		readwriteTransaction(databaseName, tableName).then(clear.bind(clear))
 	this.put = data =>
 		readwriteTransaction(databaseName, tableName).then(put.bind(put, data))
 	this.remove = id =>

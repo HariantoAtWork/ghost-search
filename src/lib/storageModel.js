@@ -18,14 +18,14 @@ const storageModel = {
 		})()
 	},
 	get posts() {
-		return (async () => {
-			return await posts.getAll().catch(() => [])
-		})()
+		return (async () => await posts.getAll().catch(() => []))()
 	},
 	set posts(value) {
-		;(async () => {
-			return await posts.put(value)
-		})()
+		if (Array.isArray(value) && !value.length) {
+			;(async () => await posts.clear())()
+		} else {
+			;(async () => await posts.put(value))()
+		}
 	}
 }
 
