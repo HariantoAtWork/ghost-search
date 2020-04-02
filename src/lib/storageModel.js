@@ -8,7 +8,7 @@ const storageModel = {
 				const { value } = await biscuit.get('lastBuildDate')
 				return value
 			} catch (e) {
-				return undefined
+				return
 			}
 		})()
 	},
