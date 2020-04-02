@@ -3,7 +3,11 @@
 		<div class="ghost-search-input">
 			<input type="search" v-model="query" />
 		</div>
-		<div class="ghost-search-posts" v-for="post in posts" :key="post.id">
+		<div
+			class="ghost-search-posts"
+			v-for="post in filteredPosts"
+			:key="post.id"
+		>
 			<h1>{{ post.title }}</h1>
 			<p>{{ post.custom_excerpt || post.excerpt }}</p>
 		</div>
@@ -60,12 +64,11 @@ export default {
 	},
 	methods: {
 		assignPosts(data) {
-			console.log('hi', Object.keys(data))
 			const { meta, posts } = data
-			const next = meta.pagination.next
+			const { next, limit } = meta.pagination
 			this.posts.push(...posts)
 			if (next) {
-				return ghostApi.nextChunkPosts(next).then(this.assignPosts)
+				return ghostApi.posts({ page: next, limit }).then(this.assignPosts)
 			} else {
 				return data
 			}
