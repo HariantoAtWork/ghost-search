@@ -2,6 +2,9 @@
 	<div class="ghost-search">
 		<div class="ghost-search-input">
 			<input type="search" v-model="query" />
+			<div>
+				{{ lastBuildDate }}
+			</div>
 		</div>
 		<div
 			class="ghost-search-posts"
@@ -17,7 +20,9 @@
 <script>
 const ghostApi = require('./lib/ghostApi')
 const getLastBuildDate = require('./lib/getLastBuildDate')
-
+const storageModel = require('./lib/storageModel')
+const dayjs = require('dayjs')
+window['storageModel'] = storageModel
 export default {
 	name: 'App',
 	components: {},
@@ -59,8 +64,13 @@ export default {
 				: this.posts
 		}
 	},
-	filters: {
-		stringify: value => JSON.stringify(value, null, '\t')
+	watch: {
+		lastBuildDate(value) {
+			storageModel.lastBuildDate = value
+		},
+		posts(value) {
+			storageModel.posts = value
+		}
 	},
 	methods: {
 		assignPosts(data) {
@@ -74,6 +84,7 @@ export default {
 			}
 		},
 		updateData() {
+			console.log('updateData')
 			this.posts = []
 			const lastBuildDate = getLastBuildDate(`${this.url}/rss/`)
 			const posts = ghostApi.posts()
@@ -89,7 +100,29 @@ export default {
 	created() {
 		const { url, ghostKey } = this
 		ghostApi.updateSettings({ url, key: ghostKey })
-		this.updateData()
+		Promise.all([storageModel.lastBuildDate, storageModel.posts])
+			.then(values => {
+				const [lastBuildDate, posts] = values
+				this.lastBuildDate = lastBuildDate
+				this.posts = posts
+				return values
+			})
+			.then(values => {
+				const [lastBuildDate, posts] = values
+				if (!posts.length) {
+					this.updateData()
+				} else if (dayjs(lastBuildDate).isValid()) {
+					getLastBuildDate(`${this.url}/rss/`).then(rssBuildDate => {
+						const diff = dayjs(lastBuildDate).diff(dayjs(rssBuildDate))
+						if (diff > 0) {
+							this.updateData()
+						}
+					})
+				} else {
+					this.updateData()
+				}
+				return values
+			})
 	}
 }
 </script>
