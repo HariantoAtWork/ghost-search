@@ -2,9 +2,9 @@
 	<div class="ghost-search">
 		<div class="ghost-search-input">
 			<input type="search" v-model="query" />
-			<div>
-				{{ lastBuildDate }}
-			</div>
+			<button :title="lastBuildDate" @click="updateData">
+				Refresh
+			</button>
 		</div>
 		<div
 			class="ghost-search-posts"
