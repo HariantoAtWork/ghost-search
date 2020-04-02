@@ -245,7 +245,7 @@ const IndexedDBPromise = function(databaseName, tableName, options) {
 					tableName
 				)
 			)
-			.then(
+			.catch(
 				upgradeDatabaseOnNewObjectStore.bind(
 					upgradeDatabaseOnNewObjectStore,
 					tableName
@@ -261,12 +261,12 @@ const IndexedDBPromise = function(databaseName, tableName, options) {
 					tableName
 				)
 			)
-			.then(
+			.catch(
 				upgradeDatabaseOnNewObjectStore.bind(
 					upgradeDatabaseOnNewObjectStore,
 					tableName
 				)
-			) // this works, but need to refactor
+			) // improved works, but need to refactor
 			.then(openTransaction.bind(openTransaction, 'readwrite'))
 
 	this.key = (prop, value) =>
