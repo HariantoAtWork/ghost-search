@@ -1,7 +1,7 @@
 <template>
-	<div class="ghost-search">
+	<div class="ghost-search panel" :class="{'panel--show': show}">
 		<header class="ghost-search__header">
-			<button class="ghost-search-button ghost-search-button--switch">
+			<button class="ghost-search-button ghost-search-button--toggle" @click="toggleScroll">
 				<span class="ghost-search-button__label">Switch</span>
 				<i class="ghost-search-button__icon fa fa-toggle-on"></i>
 			</button>
@@ -12,8 +12,17 @@
 		</header>
 		<section class="ghost-search__section">
 			<div class="ghost-search-posts" v-for="post in filteredPosts" :key="post.id">
-				<h1 class="ghost-search-posts__title">{{ post.title }}</h1>
-				<p class="ghost-search-posts__excerpt">{{ post.custom_excerpt || post.excerpt }}</p>
+				<h1 class="ghost-search-posts__title" :title="post.title">
+					<a :href="post.url">{{ post.title }}</a>
+				</h1>
+
+				<div class="ghost-search-posts__excerpt">
+					<div class="coverimage" v-if="post.feature_image">
+						<img class="coverimage__img" :src="post.feature_image" :alt="post.title" />
+					</div>
+
+					<p class>{{ post.custom_excerpt || post.excerpt }}</p>
+				</div>
 			</div>
 		</section>
 		<div class="ghost-search__footer"></div>
@@ -51,20 +60,29 @@ export default {
 		}
 	},
 	data: () => ({
+		show: false,
 		query: '',
 		lastBuildDate: '',
 		posts: []
 	}),
 	computed: {
+		sortedPostByPublishedAt() {
+			return [...this.posts].sort((a, b) => {
+				const diff = dayjs(a.published_at).diff(dayjs(b.published_at))
+				if (diff > 0) return -1
+				if (diff < 0) return 1
+				return 0
+			})
+		},
 		filteredPosts() {
 			return this.query.trim().length > 0
-				? this.posts.filter(post =>
+				? this.sortedPostByPublishedAt.filter(post =>
 						Object.values(post)
 							.toString()
 							.toLowerCase()
 							.includes(this.query.trim().toLowerCase())
 				  )
-				: this.posts
+				: this.sortedPostByPublishedAt
 		}
 	},
 	watch: {
@@ -76,9 +94,20 @@ export default {
 		},
 		posts(value) {
 			storageModel.posts = value
+		},
+		show(value) {
+			const doc = document.querySelector(':root')
+			if (value) {
+				doc.classList.add('hide-scroll')
+			} else {
+				doc.classList.remove('hide-scroll')
+			}
 		}
 	},
 	methods: {
+		toggleScroll() {
+			this.show = !this.show
+		},
 		assignPosts(data) {
 			const { meta, posts, $params } = data
 			const { next, limit } = meta.pagination
@@ -102,6 +131,9 @@ export default {
 				})
 				.then(data => this.assignPosts(data))
 		}
+	},
+	beforeCreate() {
+		// this.show = false
 	},
 	created() {
 		const { url, ghostKey } = this
@@ -136,5 +168,130 @@ export default {
 
 <style lang="scss">
 .ghost-search {
+	position: fixed;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	// width: 100vw;
+	height: 100vh;
+	z-index: 1000;
+	overflow-y: visible;
+
+	color: white;
+	padding-bottom: 40px;
+	background-color: #2f2f2f;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 28' width='56' height='28'%3E%3Cpath fill='%23000000' fill-opacity='0.4' d='M56 26v2h-7.75c2.3-1.27 4.94-2 7.75-2zm-26 2a2 2 0 1 0-4 0h-4.09A25.98 25.98 0 0 0 0 16v-2c.67 0 1.34.02 2 .07V14a2 2 0 0 0-2-2v-2a4 4 0 0 1 3.98 3.6 28.09 28.09 0 0 1 2.8-3.86A8 8 0 0 0 0 6V4a9.99 9.99 0 0 1 8.17 4.23c.94-.95 1.96-1.83 3.03-2.63A13.98 13.98 0 0 0 0 0h7.75c2 1.1 3.73 2.63 5.1 4.45 1.12-.72 2.3-1.37 3.53-1.93A20.1 20.1 0 0 0 14.28 0h2.7c.45.56.88 1.14 1.29 1.74 1.3-.48 2.63-.87 4-1.15-.11-.2-.23-.4-.36-.59H26v.07a28.4 28.4 0 0 1 4 0V0h4.09l-.37.59c1.38.28 2.72.67 4.01 1.15.4-.6.84-1.18 1.3-1.74h2.69a20.1 20.1 0 0 0-2.1 2.52c1.23.56 2.41 1.2 3.54 1.93A16.08 16.08 0 0 1 48.25 0H56c-4.58 0-8.65 2.2-11.2 5.6 1.07.8 2.09 1.68 3.03 2.63A9.99 9.99 0 0 1 56 4v2a8 8 0 0 0-6.77 3.74c1.03 1.2 1.97 2.5 2.79 3.86A4 4 0 0 1 56 10v2a2 2 0 0 0-2 2.07 28.4 28.4 0 0 1 2-.07v2c-9.2 0-17.3 4.78-21.91 12H30zM7.75 28H0v-2c2.81 0 5.46.73 7.75 2zM56 20v2c-5.6 0-10.65 2.3-14.28 6h-2.7c4.04-4.89 10.15-8 16.98-8zm-39.03 8h-2.69C10.65 24.3 5.6 22 0 22v-2c6.83 0 12.94 3.11 16.97 8zm15.01-.4a28.09 28.09 0 0 1 2.8-3.86 8 8 0 0 0-13.55 0c1.03 1.2 1.97 2.5 2.79 3.86a4 4 0 0 1 7.96 0zm14.29-11.86c1.3-.48 2.63-.87 4-1.15a25.99 25.99 0 0 0-44.55 0c1.38.28 2.72.67 4.01 1.15a21.98 21.98 0 0 1 36.54 0zm-5.43 2.71c1.13-.72 2.3-1.37 3.54-1.93a19.98 19.98 0 0 0-32.76 0c1.23.56 2.41 1.2 3.54 1.93a15.98 15.98 0 0 1 25.68 0zm-4.67 3.78c.94-.95 1.96-1.83 3.03-2.63a13.98 13.98 0 0 0-22.4 0c1.07.8 2.09 1.68 3.03 2.63a9.99 9.99 0 0 1 16.34 0z'%3E%3C/path%3E%3C/svg%3E"),
+		linear-gradient(to top, #30cfd0 0, #330867 70%, #000 100%);
+
+	.hide-scroll & {
+		overflow-x: hidden;
+		overflow-y: auto;
+	}
+
+	@media screen and (-webkit-min-device-pixel-ratio: 0) {
+		/* Webkit-specific CSS here (Chrome and Safari) */
+
+		&.panel {
+			transition: all 0.2s;
+			transform: translateX(-100%);
+
+			&--show {
+				transform: unset;
+			}
+		}
+	}
+
+	.ghost-search-button--toggle {
+		position: absolute;
+		right: 0;
+		transform: translateX(50%);
+		visibility: visible;
+	}
+
+	&__header {
+		z-index: 1;
+		position: inherit;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 40px;
+		background-color: grey;
+		display: flex;
+	}
+	.ghost-search-posts {
+		background-color: rgba(0, 0, 0, 0.527);
+		padding: 4px;
+		margin-bottom: 4px;
+		&:after {
+			content: '';
+			display: table;
+			clear: both;
+		}
+		&__title {
+			font-size: 18px;
+			background: linear-gradient(180deg, #0fb8ad 0, #1fc8db 51%, #2cb5e8 75%);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			margin-top: 0;
+			margin-bottom: 0;
+			padding: 0;
+		}
+
+		&__excerpt {
+			// display: none;
+			font-size: 16px;
+			line-height: 1.6em;
+			word-wrap: break-word;
+			overflow: hidden;
+			@media only screen and (max-width: 600px) {
+				word-break: break-all;
+			}
+
+			.coverimage {
+				max-width: 150px;
+			}
+			p {
+				margin-top: 0;
+				&:last-of-type {
+					margin-bottom: 0;
+				}
+			}
+		}
+	}
+	.u-box {
+		display: flex;
+	}
+	.u-flex {
+		flex: 1;
+	}
+	.coverimage {
+		position: relative;
+		overflow: hidden;
+		padding-bottom: 100px;
+		box-sizing: border-box;
+		&:after {
+			content: '';
+			visibility: hidden;
+			display: block;
+			clear: both;
+			height: 0;
+			box-sizing: border-box;
+		}
+
+		.coverimage__img {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			display: block;
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+			border: 0;
+			vertical-align: middle;
+		}
+	}
 }
 </style>
