@@ -6,8 +6,18 @@
 				<i class="ghost-search__button__icon fa fa-search"></i>
 			</button>
 			<div class="ghost-search-input">
+				<button
+					class="ghost-search__button ghost-search-input__button"
+					:title="lastBuildDate"
+					@click="updateData"
+				>
+					<i class="fa fa-sync"></i>
+				</button>
 				<input class="ghost-search-input__input-field" type="search" v-model="query" />
-				<button class="ghost-search-input__button" :title="lastBuildDate" @click="updateData">Refresh</button>
+			</div>
+			<div>
+				<span>{{filteredPosts.length}}</span> /
+				<span>{{posts.length}}</span>
 			</div>
 		</header>
 		<section class="ghost-search__section">
@@ -87,12 +97,8 @@ export default {
 			storageModel.posts = value
 		},
 		show(value) {
-			const doc = document.querySelector(':root')
-			if (value) {
-				doc.classList.add('hide-scroll')
-			} else {
-				doc.classList.remove('hide-scroll')
-			}
+			console.log('show:', { value })
+			this.disableScrollRootDom(value)
 		}
 	},
 	methods: {
@@ -121,12 +127,21 @@ export default {
 					return data
 				})
 				.then(data => this.assignPosts(data))
+		},
+		disableScrollRootDom(enable) {
+			const doc = document.querySelector(':root')
+			if (enable) {
+				doc.classList.add('hide-scroll')
+			} else {
+				doc.classList.remove('hide-scroll')
+			}
+		},
+		activatePanel(bool) {
+			this.disableScrollRootDom(bool)
+			this.show = bool
 		}
 	},
 	// LifeCycle Hooks
-	beforeCreate() {
-		// this.show = false
-	},
 	created() {
 		const { url, ghostKey } = this
 		this.query = storageModel.query
