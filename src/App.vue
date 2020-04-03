@@ -65,6 +65,9 @@ export default {
 		}
 	},
 	watch: {
+		query(value) {
+			storageModel.query = value
+		},
 		lastBuildDate(value) {
 			storageModel.lastBuildDate = value
 		},
@@ -99,6 +102,7 @@ export default {
 	},
 	created() {
 		const { url, ghostKey } = this
+		this.query = storageModel.query
 		ghostApi.updateSettings({ url, key: ghostKey })
 		Promise.all([storageModel.lastBuildDate, storageModel.posts])
 			.then(values => {
