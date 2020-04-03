@@ -5,7 +5,7 @@
 				<a :href="post.url">{{ post.title }}</a>
 			</h1>
 			<button class="ghost-search__button" @click="toggleDrawer">
-				<i class="fa fa-window-maximize"></i>
+				<i class="fa" :class="{'fa-window-maximize': !show, 'fa-window-minimize': show}"></i>
 			</button>
 		</header>
 
@@ -83,6 +83,9 @@ export default {
 				margin-bottom: 0;
 			}
 		}
+	}
+	.ghost-search__button {
+		background-color: transparent;
 	}
 }
 </style>
