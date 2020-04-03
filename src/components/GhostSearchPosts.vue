@@ -58,6 +58,9 @@ export default {
 	padding-top: 12px;
 	margin-top: 14px;
 	margin-bottom: 4px;
+	margin-left: 1px;
+	margin-right: 2px;
+	border-radius: 4px;
 	&:after {
 		content: '';
 		display: table;
@@ -89,6 +92,8 @@ export default {
 
 		.coverimage {
 			max-width: 150px;
+			float: left;
+			margin-right: 8px;
 		}
 		p {
 			margin-top: 0;
@@ -109,11 +114,12 @@ export default {
 		background-image: linear-gradient(
 			0deg,
 			rgba(0, 0, 0, 0) 0%,
-			rgba(0, 0, 0, 0.808) 100%
+			rgba(0, 0, 0, 0.7) 100%
 		);
 		color: rgba(255, 255, 255, 0.753);
 		border-radius: 4px;
 		font-size: 12px;
+		font-weight: 400;
 		line-height: 1em;
 		padding: 4px 8px;
 		margin: 0;

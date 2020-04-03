@@ -2,8 +2,8 @@
 	<div class="ghost-search panel" :class="{'panel--show': show}">
 		<header class="ghost-search__header">
 			<button class="ghost-search__button ghost-search__button--toggle" @click="toggleScroll">
-				<span class="ghost-search__button__label">Switch</span>
-				<i class="ghost-search__button__icon fa fa-toggle-on"></i>
+				<i class="ghost-search__button__icon fa fa-window-close"></i>
+				<i class="ghost-search__button__icon fa fa-search"></i>
 			</button>
 			<div class="ghost-search-input">
 				<input class="ghost-search-input__input-field" type="search" v-model="query" />
@@ -179,7 +179,7 @@ export default {
 	:not(.hide-scroll) & {
 		&::-webkit-scrollbar {
 			// display: none;
-			scrollbar-width: none;
+			scrollbar-width: 20px;
 		}
 	}
 
@@ -187,7 +187,7 @@ export default {
 		overflow-x: hidden;
 		overflow-y: auto;
 		&::-webkit-scrollbar {
-			scrollbar-width: unset;
+			// scrollbar-width: unset;
 		}
 	}
 
@@ -209,9 +209,22 @@ export default {
 	}
 	.ghost-search__button--toggle {
 		position: absolute;
-		right: 0;
-		transform: translateX(50%);
+		right: -40px;
+		// transform: translateX(50%);
 		visibility: visible;
+		padding: 0;
+		margin: 0;
+
+		.hide-scroll & {
+			right: -20px;
+		}
+	}
+
+	.ghost-search__button__icon {
+		width: 40px;
+		height: 40px;
+		text-align: center;
+		vertical-align: middle;
 	}
 
 	&__header {
