@@ -1,19 +1,34 @@
 <template>
 	<div class="ghost-search">
-		<div class="ghost-search-input">
-			<input type="search" v-model="query" />
-			<button :title="lastBuildDate" @click="updateData">
-				Refresh
-			</button>
-		</div>
-		<div
-			class="ghost-search-posts"
-			v-for="post in filteredPosts"
-			:key="post.id"
-		>
-			<h1>{{ post.title }}</h1>
-			<p>{{ post.custom_excerpt || post.excerpt }}</p>
-		</div>
+		<header class="ghost-search__header">
+			<div class="ghost-search-input">
+				<input
+					class="ghost-search-input__input-field"
+					type="search"
+					v-model="query"
+				/>
+				<button
+					class="ghost-search-input__button"
+					:title="lastBuildDate"
+					@click="updateData"
+				>
+					Refresh
+				</button>
+			</div>
+		</header>
+		<section class="ghost-section__main">
+			<div
+				class="ghost-search-posts"
+				v-for="post in filteredPosts"
+				:key="post.id"
+			>
+				<h1 class="ghost-search-posts__title">{{ post.title }}</h1>
+				<p class="ghost-search-posts__excerpt">
+					{{ post.custom_excerpt || post.excerpt }}
+				</p>
+			</div>
+		</section>
+		<div class="ghost-section__footer"></div>
 	</div>
 </template>
 
