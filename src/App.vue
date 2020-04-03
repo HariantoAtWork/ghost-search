@@ -123,6 +123,7 @@ export default {
 				.then(data => this.assignPosts(data))
 		}
 	},
+	// LifeCycle Hooks
 	beforeCreate() {
 		// this.show = false
 	},
@@ -257,6 +258,9 @@ export default {
 
 <style lang="scss">
 .ghost-search {
+	.u-relative {
+		position: relative;
+	}
 	.u-box {
 		display: flex;
 	}
