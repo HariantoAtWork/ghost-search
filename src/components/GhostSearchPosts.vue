@@ -1,6 +1,7 @@
 <template>
 	<div class="ghost-search-posts" :class="{'ghost-search-posts--show': show}">
-		<header class="u-box">
+		<header class="u-box u-relative">
+			<div class="publishedAt">{{ post.published_at | fromNow }}</div>
 			<h1 class="ghost-search-posts__title u-flex" :title="post.title">
 				<a :href="post.url">{{ post.title }}</a>
 			</h1>
@@ -20,6 +21,10 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+dayjs.extend(relativeTime)
+
 export default {
 	name: 'GhostSearchPosts',
 	props: {
@@ -32,6 +37,11 @@ export default {
 	data: () => ({
 		show: false
 	}),
+	filters: {
+		fromNow(value) {
+			return dayjs(value).fromNow()
+		}
+	},
 	methods: {
 		toggleDrawer() {
 			this.show = !this.show
@@ -42,8 +52,11 @@ export default {
 
 <style lang="scss" scoped>
 .ghost-search-posts {
+	// position: relative;
 	background-color: rgba(0, 0, 0, 0.527);
 	padding: 4px;
+	padding-top: 12px;
+	margin-top: 14px;
 	margin-bottom: 4px;
 	&:after {
 		content: '';
@@ -55,7 +68,7 @@ export default {
 		background: linear-gradient(180deg, #0fb8ad 0, #1fc8db 51%, #2cb5e8 75%);
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
-		margin-top: 0;
+		margin-top: 4px;
 		margin-bottom: 0;
 		padding: 0;
 	}
@@ -86,6 +99,24 @@ export default {
 	}
 	.ghost-search__button {
 		background-color: transparent;
+	}
+
+	.publishedAt {
+		position: absolute;
+		top: -20px;
+		// left: 50%;
+		// transform: translateX(-50%);
+		background-image: linear-gradient(
+			0deg,
+			rgba(0, 0, 0, 0) 0%,
+			rgba(0, 0, 0, 0.808) 100%
+		);
+		color: rgba(255, 255, 255, 0.753);
+		border-radius: 4px;
+		font-size: 12px;
+		line-height: 1em;
+		padding: 4px 8px;
+		margin: 0;
 	}
 }
 </style>
