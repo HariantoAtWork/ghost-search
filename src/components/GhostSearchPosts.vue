@@ -21,9 +21,15 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
-dayjs.extend(relativeTime)
+import dayjs from '../lib/dayjs'
+
+const fromNow = value => {
+	const publishedAt = dayjs(value)
+	const diff = publishedAt.diff(dayjs().subtract(1, 'year'))
+	if (diff <= 0)
+		return publishedAt.fromNow() + ' • ' + publishedAt.format('D MMM YYYY')
+	return publishedAt.fromNow()
+}
 
 export default {
 	name: 'GhostSearchPosts',
@@ -39,7 +45,7 @@ export default {
 	}),
 	filters: {
 		fromNow(value) {
-			return dayjs(value).fromNow()
+			return fromNow(value)
 		}
 	},
 	methods: {
