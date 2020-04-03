@@ -1,34 +1,22 @@
 <template>
 	<div class="ghost-search">
 		<header class="ghost-search__header">
+			<button class="ghost-search-button ghost-search-button--switch">
+				<span class="ghost-search-button__label">Switch</span>
+				<i class="ghost-search-button__icon fa fa-toggle-on"></i>
+			</button>
 			<div class="ghost-search-input">
-				<input
-					class="ghost-search-input__input-field"
-					type="search"
-					v-model="query"
-				/>
-				<button
-					class="ghost-search-input__button"
-					:title="lastBuildDate"
-					@click="updateData"
-				>
-					Refresh
-				</button>
+				<input class="ghost-search-input__input-field" type="search" v-model="query" />
+				<button class="ghost-search-input__button" :title="lastBuildDate" @click="updateData">Refresh</button>
 			</div>
 		</header>
-		<section class="ghost-section__main">
-			<div
-				class="ghost-search-posts"
-				v-for="post in filteredPosts"
-				:key="post.id"
-			>
+		<section class="ghost-search__section">
+			<div class="ghost-search-posts" v-for="post in filteredPosts" :key="post.id">
 				<h1 class="ghost-search-posts__title">{{ post.title }}</h1>
-				<p class="ghost-search-posts__excerpt">
-					{{ post.custom_excerpt || post.excerpt }}
-				</p>
+				<p class="ghost-search-posts__excerpt">{{ post.custom_excerpt || post.excerpt }}</p>
 			</div>
 		</section>
-		<div class="ghost-section__footer"></div>
+		<div class="ghost-search__footer"></div>
 	</div>
 </template>
 
@@ -42,22 +30,22 @@ export default {
 	name: 'App',
 	components: {},
 	props: {
-		'script': {
+		script: {
 			type: String,
 			default:
 				'https://unpkg.com/@tryghost/content-api@1.3.9/umd/content-api.min.js'
 		},
-		'url': {
+		url: {
 			type: String,
 			required: true,
 			default: 'https://blog.ghost.localhost'
 		},
-		'ghostKey': {
+		ghostKey: {
 			type: String,
 			required: true,
 			default: 'c3426374501bcd41a801c5a74a'
 		},
-		'version': {
+		version: {
 			type: String,
 			default: 'v3'
 		}
