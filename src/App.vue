@@ -1,11 +1,7 @@
 <template>
 	<div class="ghost-search panel" :class="{'panel--show': show}">
-		<header class="ghost-search__header">
-			<button class="ghost-search__button ghost-search__button--toggle" @click="toggleScroll">
-				<i class="ghost-search__button__icon fa fa-window-close"></i>
-				<i class="ghost-search__button__icon fa fa-search"></i>
-			</button>
-			<div class="ghost-search-input">
+		<header class="ghost-search__header u-box">
+			<div class="ghost-search-input u-flex u-box">
 				<button
 					class="ghost-search__button ghost-search-input__button"
 					:title="lastBuildDate"
@@ -13,12 +9,23 @@
 				>
 					<i class="fa fa-sync"></i>
 				</button>
-				<input class="ghost-search-input__input-field" type="search" v-model="query" />
+				<input
+					v-model="query"
+					class="ghost-search-input__input u-flex"
+					type="search"
+					placeholder="Search"
+				/>
 			</div>
-			<div>
+			<div class="ghost-search-postsindicator">
 				<span>{{filteredPosts.length}}</span> /
 				<span>{{posts.length}}</span>
 			</div>
+			<button class="ghost-search__button ghost-search__button--toggle" @click="toggleScroll">
+				<i
+					class="ghost-search__button__icon fa"
+					:class="{ 'fa-window-close': show, 'fa-search': !show }"
+				></i>
+			</button>
 		</header>
 		<section class="ghost-search__section">
 			<GhostSearchPosts :post="post" v-for="post in filteredPosts" :key="post.id" />
@@ -219,8 +226,13 @@ export default {
 		}
 	}
 
+	// Button
 	.ghost-search__button {
 		background-color: black;
+		width: 40px;
+		height: 40px;
+		margin: 0;
+		padding: 0;
 	}
 	.ghost-search__button--toggle {
 		position: absolute;
@@ -231,18 +243,22 @@ export default {
 		margin: 0;
 
 		.hide-scroll & {
-			right: -20px;
+			// position: unset;
+			right: 0 + 15px;
 		}
 	}
-
-	.ghost-search__button__icon {
-		width: 40px;
+	// Input
+	.ghost-search-input__input {
 		height: 40px;
-		text-align: center;
-		vertical-align: middle;
+		border: 0;
+		color: black;
+		margin: 0;
+		margin-right: 40px + 15;
+		padding: 0 8px;
 	}
 
-	&__header {
+	// .ghost-search .ghost-search__header
+	.ghost-search &__header {
 		z-index: 1;
 		position: inherit;
 		bottom: 0;
@@ -251,6 +267,19 @@ export default {
 		height: 40px;
 		background-color: grey;
 		display: flex;
+	}
+
+	.ghost-search-postsindicator {
+		position: absolute;
+		top: -6px;
+		left: 50%;
+		transform: translateX(-50%);
+		border-radius: 4px;
+		background-color: grey;
+		font-size: 12px;
+		line-height: 1em;
+		padding: 4px 8px;
+		box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
 	}
 
 	.coverimage {
