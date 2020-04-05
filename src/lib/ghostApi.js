@@ -16,7 +16,13 @@ const ghostApi = {
 	posts: params => {
 		const url = `${settings.url}/ghost/api/${settings.version}/content/posts/`
 		params = {
-			...{ key: settings.key, limit: 1000, include: 'tags,authors' },
+			...{
+				key: settings.key,
+				limit: 1000,
+				include: 'tags,authors',
+				format: 'plaintext',
+				fields: 'title,url,custom_excerpt,excerpt,feature_image'
+			},
 			...params
 		}
 		retrievePostRequest.cancel()
