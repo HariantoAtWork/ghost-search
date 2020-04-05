@@ -140,9 +140,9 @@ export default {
 		disableScrollRootDom(enable) {
 			const doc = document.querySelector(':root')
 			if (enable) {
-				doc.classList.add('ghost-search--hide-scroll')
+				doc.classList.add('hide-scroll')
 			} else {
-				doc.classList.remove('ghost-search--hide-scroll')
+				doc.classList.remove('hide-scroll')
 			}
 		},
 		activatePanel(bool) {
@@ -155,7 +155,11 @@ export default {
 		const { url, ghostKey } = this
 		this.query = storageModel.query
 		ghostApi.updateSettings({ url, key: ghostKey })
-		Promise.all([storageModel.lastBuildDate, storageModel.posts])
+		Promise.all([
+			storageModel.lastBuildDate,
+			storageModel.posts,
+			getLastBuildDate(`${this.url}/rss/`)
+		])
 			.then(values => {
 				const [lastBuildDate, posts] = values
 				this.lastBuildDate = lastBuildDate
@@ -163,26 +167,25 @@ export default {
 				return values
 			})
 			.then(values => {
-				const [lastBuildDate, posts] = values
-				if (!posts.length) {
-					this.updateData()
-				} else if (dayjs(lastBuildDate).isValid()) {
-					getLastBuildDate(`${this.url}/rss/`).then(rssBuildDate => {
-						const diff = dayjs(lastBuildDate).diff(dayjs(rssBuildDate))
-						if (diff > 0) {
-							this.updateData()
-						}
-					})
-				} else {
+				const [lastBuildDate, posts, rssBuildDate] = values
+				// When there is no Posts, the Storage Date aren’t valid, When there is time difference
+				if (
+					!posts.length ||
+					!dayjs(lastBuildDate).isValid() ||
+					dayjs(lastBuildDate).diff(dayjs(rssBuildDate)) < 0
+				) {
 					this.updateData()
 				}
 				return values
+			})
+			.catch(() => {
+				this.updateData()
 			})
 	}
 }
 </script>
 <style lang="scss">
-.ghost-search--hide-scroll {
+.hide-scroll {
 	overflow: hidden;
 	height: 100vh;
 	&::-webkit-scrollbar {
