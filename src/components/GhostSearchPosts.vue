@@ -1,12 +1,12 @@
 <template>
-	<div class="ghost-search-posts" :class="{'ghost-search-posts--show': show}">
-		<header class="u-box u-relative">
+	<div class="ghost-search-posts" :class="{ 'ghost-search-posts--show': show }">
+		<header class="ghost-search-posts__header u-box u-relative">
 			<div class="publishedAt">{{ post.published_at | fromNow }}</div>
 			<h1 class="ghost-search-posts__title u-flex" :title="post.title">
 				<a :href="post.url">{{ post.title }}</a>
 			</h1>
 			<button class="ghost-search__button" @click="toggleDrawer">
-				<i class="fa" :class="{'fa-window-maximize': !show, 'fa-window-minimize': show}"></i>
+				<i class="fa" :class="{ 'fa-window-maximize': !show, 'fa-window-minimize': show }"></i>
 			</button>
 		</header>
 
@@ -67,6 +67,7 @@ export default {
 	margin-left: 1px;
 	margin-right: 2px;
 	border-radius: 4px;
+	font-family: 'proxima-nova-1', sans-serif;
 	&:after {
 		content: '';
 		display: table;
@@ -86,6 +87,9 @@ export default {
 		display: none;
 	}
 
+	&__header {
+	}
+
 	&__excerpt {
 		// display: none;
 		font-size: 16px;
@@ -97,7 +101,7 @@ export default {
 		}
 
 		.coverimage {
-			max-width: 150px;
+			max-width: 200px;
 			float: left;
 			margin-right: 8px;
 		}
@@ -109,7 +113,17 @@ export default {
 		}
 	}
 	.ghost-search__button {
-		background-color: transparent;
+		width: 40px;
+		height: 40px;
+		margin-top: -8px;
+		margin-right: 0;
+		margin-bottom: 0;
+		margin-left: 0;
+		padding: 0;
+		background-color: rgba(0, 0, 0, 0.3);
+		border-radius: 4px;
+		color: white;
+		border: 0;
 	}
 
 	.publishedAt {
@@ -129,6 +143,37 @@ export default {
 		line-height: 1em;
 		padding: 4px 8px;
 		margin: 0;
+	}
+
+	.coverimage {
+		position: relative;
+		overflow: hidden;
+		box-sizing: border-box;
+		background-color: hotpink;
+		width: 100%;
+		&:after {
+			content: '';
+			visibility: hidden;
+			display: block;
+			clear: both;
+			height: 0;
+			box-sizing: border-box;
+			padding-bottom: 75%;
+		}
+
+		.coverimage__img {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			display: block;
+			object-fit: cover;
+			width: 100%;
+			height: 100%;
+			border: 0;
+			vertical-align: middle;
+		}
 	}
 }
 </style>
