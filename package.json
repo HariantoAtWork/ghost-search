@@ -7,7 +7,7 @@
 		"serve": "vue-cli-service serve",
 		"build": "vue-cli-service build",
 		"build.wc": "vue-cli-service build --target wc --name ghost-search",
-		"build.wc-async": "vue-cli-service build --target wc-async --name ghost-search-async",
+		"build.wc-async": "vue-cli-service build --target wc-async --name ghost-search",
 		"lint": "vue-cli-service lint"
 	},
 	"dependencies": {
