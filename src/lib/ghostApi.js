@@ -20,8 +20,8 @@ const ghostApi = {
 				key: settings.key,
 				limit: 1000,
 				include: 'tags,authors',
-				format: 'plaintext',
-				fields: 'title,url,custom_excerpt,excerpt,feature_image'
+				formats: 'plaintext',
+				fields: 'title,url,custom_excerpt,excerpt,feature_image,published_at'
 			},
 			...params
 		}
