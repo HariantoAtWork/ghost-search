@@ -34,9 +34,27 @@ See [Configuration Reference](https://cli.vuejs.org/config/).
 
 
 <ghost-search-async
-  script="https://unpkg.com/@tryghost/content-api@1.3.9/umd/content-api.min.js"
   url="https://blog.ghost.localhost"
   ghost-key="c3426374501bcd41a801c5a74a"
   version="v3"></ghost-search-async>
 ```
 > `url` and `ghost-key` are required
+
+
+```js
+;(() => {
+	if (!document.body) document.body = document.createElement('body')
+	const ghostSearchDom = document.createElement('ghost-search')
+	const attributes = {
+		'url': location.origin,
+		'ghost-key': 'd74579e93e65600e617d0b9823'
+	}
+	for (let [key, value] of Object.entries(attributes)) {
+		const attr = document.createAttribute(key)
+		attr.value = value
+		ghostSearchDom.setAttributeNode(attr)
+	}
+	document.body.appendChild(ghostSearchDom)
+})()
+
+```
