@@ -204,6 +204,18 @@ export default {
 	.u-flex {
 		flex: 1;
 	}
+
+	@media screen and (-webkit-min-device-pixel-ratio: 0) {
+		select,
+		textarea,
+		input {
+			font-size: 16px;
+
+			&:focus {
+				font-size: 16px;
+			}
+		}
+	}
 }
 </style>
 <style lang="scss" scoped>
@@ -214,7 +226,7 @@ export default {
 	top: 0;
 	bottom: 0;
 	// width: 100vw;
-	height: 100vh;
+	// height: 100vh;
 	z-index: 1000;
 	// overflow-y: visible;
 	font-family: 'proxima-nova-1', sans-serif;
@@ -229,7 +241,7 @@ export default {
 		/* Webkit-specific CSS here (Chrome and Safari) */
 
 		&.panel {
-			transition: all 0.2s;
+			transition: all 0.6s;
 			transform: translateX(-100%);
 
 			&--show {
@@ -304,9 +316,13 @@ export default {
 		right: 0;
 
 		> .ghost-search__button {
-			position: relative;
+			position: absolute;
 			bottom: 40px;
 			right: -40px;
+			border-radius: 0 8px 8px 0;
+			border-left: 4px solid #1fc8db;
+			box-shadow: 0 0 2px rgba(255, 255, 255, 0.6), 0 1px 0 #1fc8db;
+			cursor: pointer;
 		}
 	}
 
