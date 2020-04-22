@@ -34,11 +34,7 @@ const ghostApi = {
 			}))
 			.catch(console.error.bind(console, 'FAIL - posts'))
 		return retrievePostRequest
-	},
-	nextChunkPosts: page =>
-		ghostApi
-			.posts({ page })
-			.catch(console.error.bind(console, 'FAIL - nextChunkPosts'))
+	}
 }
 
 module.exports = ghostApi
