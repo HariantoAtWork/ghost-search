@@ -1,5 +1,5 @@
 <template>
-	<div class="ghost-search-posts" :class="{ 'ghost-search-posts--show': show }">
+	<div class="ghost-search-posts" :class="styleTags">
 		<header class="ghost-search-posts__header u-box u-relative">
 			<div class="publishedAt">{{ post.published_at | fromNow }}</div>
 			<h1 class="ghost-search-posts__title u-flex" :title="post.title">
@@ -43,6 +43,16 @@ export default {
 	data: () => ({
 		show: false
 	}),
+	computed: {
+		styleTags() {
+			const list =
+				[
+					this.show ? 'ghost-search-posts--show' : this.show,
+					...this.post.tags.map(({ slug }) => 'tag--' + slug)
+				].filter(Boolean) || []
+			return list
+		}
+	},
 	filters: {
 		fromNow(value) {
 			return fromNow(value)
@@ -81,6 +91,24 @@ export default {
 		margin-top: 4px;
 		margin-bottom: 0;
 		padding: 0;
+
+		.tag--draft & {
+			color: orangered;
+			background: unset;
+			-webkit-text-fill-color: unset;
+
+			a {
+				color: inherit;
+				text-decoration: inherit;
+			}
+
+			&:after {
+				content: ' (Draft)';
+				font-style: italic;
+				color: rgba(255, 255, 255, 0.753);
+				font-size: 0.8em;
+			}
+		}
 	}
 
 	&:not(.ghost-search-posts--show) > .ghost-search-posts__excerpt {
