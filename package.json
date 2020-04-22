@@ -8,7 +8,8 @@
 		"build": "vue-cli-service build",
 		"build.wc": "vue-cli-service build --target wc --name ghost-search",
 		"build.wc-async": "vue-cli-service build --target wc-async --name ghost-search",
-		"lint": "vue-cli-service lint"
+		"lint": "vue-cli-service lint",
+		"cp": "cp dist/ghost-search.min.* ../ghost-theme-sylo/assets/built/vue/"
 	},
 	"dependencies": {
 		"axiosbluebird": "^1.1.6",
