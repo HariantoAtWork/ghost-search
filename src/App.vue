@@ -185,6 +185,30 @@ export default {
 }
 </script>
 <style lang="scss">
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+	background-color: #f5f5f5;
+	box-sizing: border-box;
+
+	&-track {
+		background-color: #424a58;
+	}
+
+	&-thumb {
+		background-color: #98a7b7;
+		border-radius: 4px;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+
+		&:hover {
+			background-color: #1fc8db;
+		}
+
+		&:active {
+			background-color: #0fb8ad;
+		}
+	}
+}
 .hide-scroll {
 	overflow: hidden;
 	height: 100vh;
