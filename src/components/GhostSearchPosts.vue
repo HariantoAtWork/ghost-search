@@ -92,6 +92,28 @@ export default {
 		margin-bottom: 0;
 		padding: 0;
 
+		.tag--journal & {
+			color: #0fb8ad;
+			background: unset;
+			-webkit-text-fill-color: unset;
+
+			a {
+				color: inherit;
+				text-decoration: inherit;
+
+				&:visited {
+					color: inherit;
+				}
+			}
+
+			&:after {
+				content: ' (Journal)';
+				font-style: italic;
+				color: rgba(255, 255, 255, 0.753);
+				font-size: 0.8em;
+			}
+		}
+
 		.tag--draft & {
 			color: orangered;
 			background: unset;
