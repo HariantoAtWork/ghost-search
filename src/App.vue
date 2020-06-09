@@ -20,10 +20,14 @@
 				<span>{{ filteredPosts.length }}</span> /
 				<span>{{ posts.length }}</span>
 			</div>
-			<button class="ghost-search__button ghost-search__button--toggle" @click="toggleTagsPanel">
+			<button
+				class="ghost-search__button ghost-search__button--toggle"
+				:class="{'active': filters.tags.length}"
+				@click="toggleTagsPanel"
+			>
 				<i
 					class="ghost-search__button__icon fa"
-					:class="{ 'fa-window-close': showTagsPanel, 'fa-filter': !showTagsPanel }"
+					:class="{ 'fa-window-close-o': showTagsPanel, 'fa-filter': !showTagsPanel }"
 				></i>
 			</button>
 			<button class="ghost-search__button ghost-search__button--toggle" @click="toggleScroll">
@@ -371,7 +375,12 @@ export default {
 		height: 40px;
 		background-color: grey;
 		display: flex;
-		// margin-right: 18px;
+
+		> .ghost-search__button {
+			&.active {
+				background-color: #1fc8db;
+			}
+		}
 	}
 
 	// Button
