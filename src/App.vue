@@ -20,6 +20,12 @@
 				<span>{{ filteredPosts.length }}</span> /
 				<span>{{ posts.length }}</span>
 			</div>
+			<button class="ghost-search__button ghost-search__button--toggle" @click="toggleTagsPanel">
+				<i
+					class="ghost-search__button__icon fa"
+					:class="{ 'fa-window-close': showTagsPanel, 'fa-filter': !showTagsPanel }"
+				></i>
+			</button>
 			<button class="ghost-search__button ghost-search__button--toggle" @click="toggleScroll">
 				<i
 					class="ghost-search__button__icon fa"
@@ -29,6 +35,15 @@
 		</header>
 		<section class="ghost-search__section">
 			<GhostSearchPosts :post="post" v-for="post in filteredPosts" :key="post.id" />
+		</section>
+		<section v-if="showTagsPanel" class="ghost-search__filter-panel">
+			<FilterGroupList
+				title="Tags"
+				:disabledTags="filters.tags"
+				:availableTags="filteredTagsFromFilteredListBy('tags')"
+				:onRemoveTagFrom="onRemoveFromFilterBy.bind(this, 'tags')"
+				:onAddTagTo="onAddToFilterBy.bind(this, 'tags')"
+			/>
 		</section>
 		<footer class="ghost-search__footer">
 			<button class="ghost-search__button" @click="toggleScroll">
@@ -43,15 +58,21 @@
 
 <script>
 import GhostSearchPosts from './components/GhostSearchPosts.vue'
-const ghostApi = require('./lib/ghostApi')
-const getLastBuildDate = require('./lib/getLastBuildDate')
-const storageModel = require('./lib/storageModel')
-const dayjs = require('dayjs')
+import FilterGroupList from './components/FilterGroupList.vue'
+
+const ghostApi = require('./lib/ghostApi'),
+	getLastBuildDate = require('./lib/getLastBuildDate'),
+	storageModel = require('./lib/storageModel')
+const dayjs = require('dayjs'),
+	uniqBy = require('lodash/uniqBy'),
+	difference = require('lodash/difference')
+
 window['storageModel'] = storageModel
 export default {
 	name: 'App',
 	components: {
-		GhostSearchPosts
+		GhostSearchPosts,
+		FilterGroupList
 	},
 	props: {
 		url: {
@@ -73,7 +94,11 @@ export default {
 		show: false,
 		query: '',
 		lastBuildDate: '',
-		posts: []
+		posts: [],
+		showTagsPanel: false,
+		filters: {
+			tags: []
+		}
 	}),
 	computed: {
 		sortedPostByPublishedAt() {
@@ -85,14 +110,50 @@ export default {
 			})
 		},
 		filteredPosts() {
-			return this.query.trim().length > 0
-				? this.sortedPostByPublishedAt.filter(post =>
-						Object.values(post)
-							.toString()
-							.toLowerCase()
-							.includes(this.query.trim().toLowerCase())
-				  )
-				: this.sortedPostByPublishedAt
+			const queryElements = Object.values(this.filters).reduce(
+					(acc, collection) => [...acc, ...collection],
+					[]
+				),
+				list = this.sortedPostByPublishedAt,
+				query = this.query.trim().toLowerCase()
+
+			return query.length || queryElements.length
+				? list.filter(item => {
+						const { title, excerpt, custom_excerpt, plaintext } = item
+						const attrs = [title, excerpt, custom_excerpt, plaintext]
+
+						return (
+							attrs.reduce((acc, attr) => {
+								return (
+									acc +
+									Boolean(
+										attr &&
+											String(attr)
+												.toLowerCase()
+												.includes(query)
+									)
+								)
+							}, false) &&
+							queryElements.reduce((acc, element) => {
+								return (
+									acc * Boolean(item.tags.find(tag => tag.id === element.id))
+								)
+							}, true)
+						)
+				  })
+				: list
+		},
+		uniqueTagsFromPosts() {
+			return uniqBy(
+				this.posts.reduce((acc, item) => [...acc, ...item.tags], []),
+				'id'
+			)
+		},
+		uniqueTagsFromFilteredPosts() {
+			return uniqBy(
+				this.filteredPosts.reduce((acc, item) => [...acc, ...item.tags], []),
+				'id'
+			)
 		}
 	},
 	watch: {
@@ -111,6 +172,14 @@ export default {
 		}
 	},
 	methods: {
+		filteredTagsBy(prop) {
+			return difference(this.uniqueTagsFromPosts, this.filters[prop])
+		},
+		filteredTagsFromFilteredListBy(prop) {
+			return this.filteredTagsBy(prop).filter(item =>
+				this.uniqueTagsFromFilteredPosts.find(tag => tag === item)
+			)
+		},
 		toggleScroll() {
 			this.show = !this.show
 		},
@@ -148,6 +217,24 @@ export default {
 		activatePanel(bool) {
 			this.disableScrollRootDom(bool)
 			this.show = bool
+		},
+		toggleTagsPanel() {
+			this.showTagsPanel = !this.showTagsPanel
+		},
+		// Events
+		onAddToFilterBy(prop, value) {
+			const list = this.filters[prop]
+			const foundIndex = list.indexOf(value)
+			if (!(foundIndex > -1)) {
+				list.push(value)
+			}
+		},
+		onRemoveFromFilterBy(prop, value) {
+			const list = this.filters[prop]
+			let foundIndex = list.indexOf(value)
+			if (foundIndex > -1) {
+				list.splice(foundIndex, 1)
+			}
 		}
 	},
 	// LifeCycle Hooks
@@ -347,6 +434,26 @@ export default {
 			border-left: 4px solid #1fc8db;
 			box-shadow: 0 0 2px rgba(255, 255, 255, 0.6), 0 1px 0 #1fc8db;
 			cursor: pointer;
+		}
+	}
+
+	.ghost-search &__filter-panel {
+		position: absolute;
+		top: 0;
+		right: 0;
+		bottom: 40px;
+		overflow-y: auto;
+		overflow-x: hidden;
+		width: calc(100% - 40px);
+		max-width: 540px;
+		background-color: rgba(0, 0, 0, 0.897);
+		padding: 8px;
+		box-sizing: border-box;
+
+		.filter-panel__list {
+			list-style: none;
+			margin-top: unset;
+			padding-left: unset;
 		}
 	}
 
