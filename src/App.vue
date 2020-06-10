@@ -69,7 +69,7 @@ const ghostApi = require('./lib/ghostApi'),
 	storageModel = require('./lib/storageModel')
 const dayjs = require('dayjs'),
 	uniqBy = require('lodash/uniqBy'),
-	difference = require('lodash/difference')
+	differenceBy = require('lodash/differenceBy')
 
 window['storageModel'] = storageModel
 export default {
@@ -127,22 +127,22 @@ export default {
 						const attrs = [title, excerpt, custom_excerpt, plaintext]
 
 						return (
-							attrs.reduce((acc, attr) => {
-								return (
+							attrs.reduce(
+								(acc, attr) =>
 									acc +
 									Boolean(
 										attr &&
 											String(attr)
 												.toLowerCase()
 												.includes(query)
-									)
-								)
-							}, false) &&
-							queryElements.reduce((acc, element) => {
-								return (
-									acc * Boolean(item.tags.find(tag => tag.id === element.id))
-								)
-							}, true)
+									),
+								false
+							) &&
+							queryElements.reduce(
+								(acc, element) =>
+									acc * Boolean(item.tags.find(tag => tag.id === element.id)),
+								true
+							)
 						)
 				  })
 				: list
@@ -177,11 +177,11 @@ export default {
 	},
 	methods: {
 		filteredTagsBy(prop) {
-			return difference(this.uniqueTagsFromPosts, this.filters[prop])
+			return differenceBy(this.uniqueTagsFromPosts, this.filters[prop], 'id')
 		},
 		filteredTagsFromFilteredListBy(prop) {
 			return this.filteredTagsBy(prop).filter(item =>
-				this.uniqueTagsFromFilteredPosts.find(tag => tag === item)
+				this.uniqueTagsFromFilteredPosts.find(tag => tag.id === item.id)
 			)
 		},
 		toggleScroll() {
